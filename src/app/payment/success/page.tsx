@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function PaymentSuccess(){return <main className="mx-auto max-w-2xl px-4 py-20"><div className="card text-center"><h1 className="text-4xl font-black">Спасибо! Платёж обрабатывается</h1><p className="mt-4 text-slate-600">После подтверждения ЮKassa статус заказа обновится автоматически через webhook.</p><Link className="btn btn-primary mt-8" href="/dashboard/orders">Перейти к заказам</Link></div></main>}
