@@ -1,0 +1,6 @@
+import Link from 'next/link';
+import { requireRole } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { OrderStatus } from '@prisma/client';
+import { Shell, StatusPill } from '@/components/ui';
+export default async function AdminOrders({ searchParams }: { searchParams: { status?: string } }) { await requireRole(['ADMIN','OPERATOR']); const orders = await prisma.order.findMany({ where: searchParams.status && Object.values(OrderStatus).includes(searchParams.status as OrderStatus) ? { status: searchParams.status as OrderStatus } : {}, include: { service: true, user: true }, orderBy: { createdAt: 'desc' } }); return <Shell title="Заказы"><div className="mb-5 flex flex-wrap gap-2">{['WAITING_PAYMENT','IN_PROGRESS','READY','COMPLETED'].map(s => <Link className="btn-secondary" href={`/admin/orders?status=${s}`} key={s}>{s}</Link>)}</div><div className="space-y-3">{orders.map(o => <Link className="card flex justify-between" href={`/admin/orders/${o.id}`} key={o.id}><div><b>{o.service.title}</b><p className="text-slate-400">{o.user.email}</p></div><div className="flex gap-2"><StatusPill value={o.status}/><StatusPill type="payment" value={o.paymentStatus}/></div></Link>)}</div></Shell>; }

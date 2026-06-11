@@ -1,0 +1,5 @@
+import Link from 'next/link';
+import { requireUser } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { Shell, StatusPill } from '@/components/ui';
+export default async function Dashboard() { const user = await requireUser(); const orders = await prisma.order.findMany({ where: { userId: user.id }, include: { service: true }, orderBy: { createdAt: 'desc' }, take: 5 }); return <Shell title="Личный кабинет" subtitle={`Здравствуйте, ${user.name || user.email}`}><div className="grid gap-5 md:grid-cols-3"><Link className="card" href="/dashboard/orders">Мои заказы</Link><Link className="card" href="/dashboard/balance">Баланс</Link><Link className="card" href="/dashboard/profile">Профиль</Link></div><h2 className="mt-10 mb-4 text-2xl font-bold">Последние заказы</h2><div className="space-y-3">{orders.map(o => <Link className="card block" href={`/dashboard/orders/${o.id}`} key={o.id}><b>{o.service.title}</b><div className="mt-2 flex gap-2"><StatusPill value={o.status}/><StatusPill type="payment" value={o.paymentStatus}/></div></Link>)}</div></Shell>; }
