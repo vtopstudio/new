@@ -1,0 +1,2 @@
+const labels: Record<string,string>={DRAFT:"Черновик",WAITING_PAYMENT:"Ожидает оплаты",PAID:"Оплачен",IN_PROGRESS:"В работе",NEEDS_CLARIFICATION:"Нужно уточнение",READY:"Готов",COMPLETED:"Завершён",CANCELLED:"Отменён",PENDING:"Ожидает",FAILED:"Ошибка",REFUNDED:"Возврат",MANUAL_CONFIRMED:"Подтверждён",YOOKASSA:"YooKassa"};
+export function StatusBadge({ value }: { value: string }) { return <span className="badge">{labels[value] ?? value}</span>; }
