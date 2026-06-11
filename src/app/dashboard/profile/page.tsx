@@ -1,0 +1,2 @@
+import { getServerSession } from "next-auth";import { redirect } from "next/navigation";import { authOptions } from "@/lib/auth";
+export default async function Profile(){const s=await getServerSession(authOptions);if(!s?.user)redirect("/auth/sign-in");return <main className="mx-auto max-w-3xl px-4 py-10"><div className="card p-8"><h1 className="text-3xl font-black">Профиль</h1><p className="mt-5"><b>Email:</b> {s.user.email}</p><p><b>Имя:</b> {s.user.name||"не указано"}</p></div></main>}
