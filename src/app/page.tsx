@@ -1,7 +1,96 @@
 import Link from "next/link";
-import { serviceSeedData } from "@/lib/services";
 import { rub } from "@/lib/format";
+import { serviceSeedData } from "@/lib/services";
 
 export default function Home() {
-  return <main><section className="mx-auto grid max-w-7xl gap-10 px-4 py-20 lg:grid-cols-[1.1fr_.9fr]"><div><span className="badge">AI + контроль человека</span><h1 className="mt-6 text-5xl font-black tracking-tight md:text-7xl">Готовый дизайн для бизнеса за минуты</h1><p className="mt-6 max-w-2xl text-xl text-slate-600">Карточки товаров, оформление ВК, логотипы и баннеры с помощью ИИ и контроля человека. Мы продаём не генерацию картинок, а прикладной дизайн-продукт.</p><div className="mt-8 flex gap-3"><Link href="/services" className="btn btn-primary">Выбрать услугу</Link><a href="#examples" className="btn btn-secondary">Посмотреть примеры</a></div></div><div className="card bg-gradient-to-br from-indigo-50 to-emerald-50"><h2 className="text-2xl font-black">Не просто ИИ-картинки</h2><p className="mt-3 text-slate-600">Оператор получает структурированный промт, проверяет результат, отбирает лучшие варианты и загружает итоговые материалы в ваш заказ.</p><div className="mt-8 grid gap-3">{["Бриф под задачу", "Оплата через ЮKassa", "Промт для дизайнера", "Готовые результаты в кабинете"].map((item) => <div className="rounded-2xl bg-white p-4 font-semibold" key={item}>{item}</div>)}</div></div></section><section className="mx-auto max-w-7xl px-4 py-12"><h2 className="text-3xl font-black">Услуги MVP</h2><div className="mt-6 grid gap-4 md:grid-cols-4">{serviceSeedData.map((service) => <Link className="card hover:shadow-soft" href={`/services/${service.slug}`} key={service.slug}><h3 className="font-black">{service.title}</h3><p className="mt-3 text-sm text-slate-600">{service.shortDescription}</p><p className="mt-4 font-black">от {rub(service.basePrice)}</p></Link>)}</div></section><section id="process" className="mx-auto max-w-7xl px-4 py-12"><h2 className="text-3xl font-black">Как это работает</h2><div className="mt-6 grid gap-4 md:grid-cols-4">{["Вы выбираете услугу", "Заполняете бриф и файлы", "Оплачиваете заказ", "Получаете варианты дизайна"].map((step, i) => <div className="card" key={step}><div className="text-4xl font-black text-brand">{i + 1}</div><p className="mt-4 font-semibold">{step}</p></div>)}</div></section><section id="examples" className="mx-auto max-w-7xl px-4 py-12"><h2 className="text-3xl font-black">Примеры работ</h2><div className="mt-6 grid gap-4 md:grid-cols-3">{["Маркетплейс", "ВК", "Баннер"].map((item) => <div className="rounded-3xl bg-gradient-to-br from-slate-900 to-indigo-700 p-10 text-white" key={item}><p className="text-sm uppercase opacity-70">placeholder</p><p className="mt-20 text-2xl font-black">{item}</p></div>)}</div></section><section id="faq" className="mx-auto max-w-4xl px-4 py-16"><h2 className="text-3xl font-black">FAQ</h2><div className="mt-6 space-y-3"><div className="card"><b>Это полностью автоматический сервис?</b><p className="mt-2 text-slate-600">Нет. ИИ ускоряет производство, человек контролирует качество и пригодность дизайна.</p></div><div className="card"><b>Можно ли заказать доработку?</b><p className="mt-2 text-slate-600">В MVP оператор оставляет комментарии, а дальнейшие доработки заложены архитектурно.</p></div></div></section></main>;
+  return (
+    <main>
+      <section className="mx-auto grid max-w-7xl gap-10 px-4 py-20 lg:grid-cols-[1.1fr_.9fr]">
+        <div>
+          <span className="badge">AI + контроль человека</span>
+          <h1 className="mt-6 text-5xl font-black tracking-tight md:text-7xl">Готовый дизайн для бизнеса за минуты</h1>
+          <p className="mt-6 max-w-2xl text-xl text-slate-600">
+            Карточки товаров, оформление ВК, логотипы и баннеры с помощью ИИ и контроля человека. Мы продаём не генерацию картинок, а
+            прикладной дизайн-продукт.
+          </p>
+          <div className="mt-8 flex gap-3">
+            <Link href="/services" className="btn btn-primary">Выбрать услугу</Link>
+            <a href="#examples" className="btn btn-secondary">Посмотреть примеры</a>
+          </div>
+        </div>
+        <div className="card bg-gradient-to-br from-indigo-50 to-emerald-50">
+          <h2 className="text-2xl font-black">Не просто ИИ-картинки</h2>
+          <p className="mt-3 text-slate-600">
+            Оператор получает структурированный промт, проверяет результат, отбирает лучшие варианты и загружает итоговые материалы в ваш заказ.
+          </p>
+          <div className="mt-8 grid gap-3">
+            {[
+              "Бриф под задачу",
+              "Оплата через ЮKassa",
+              "Промт для дизайнера",
+              "Готовые результаты в кабинете"
+            ].map((item) => (
+              <div className="rounded-2xl bg-white p-4 font-semibold" key={item}>{item}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12">
+        <h2 className="text-3xl font-black">Услуги MVP</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-4">
+          {serviceSeedData.map((service) => (
+            <Link className="card hover:shadow-soft" href={`/services/${service.slug}`} key={service.slug}>
+              <h3 className="font-black">{service.title}</h3>
+              <p className="mt-3 text-sm text-slate-600">{service.shortDescription}</p>
+              <p className="mt-4 font-black">от {rub(service.basePrice)}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section id="process" className="mx-auto max-w-7xl px-4 py-12">
+        <h2 className="text-3xl font-black">Как это работает</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-4">
+          {[
+            "Вы выбираете услугу",
+            "Заполняете бриф и файлы",
+            "Оплачиваете заказ",
+            "Получаете варианты дизайна"
+          ].map((step, index) => (
+            <div className="card" key={step}>
+              <div className="text-4xl font-black text-brand">{index + 1}</div>
+              <p className="mt-4 font-semibold">{step}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="examples" className="mx-auto max-w-7xl px-4 py-12">
+        <h2 className="text-3xl font-black">Примеры работ</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {["Маркетплейс", "ВК", "Баннер"].map((item) => (
+            <div className="rounded-3xl bg-gradient-to-br from-slate-900 to-indigo-700 p-10 text-white" key={item}>
+              <p className="text-sm uppercase opacity-70">placeholder</p>
+              <p className="mt-20 text-2xl font-black">{item}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="faq" className="mx-auto max-w-4xl px-4 py-16">
+        <h2 className="text-3xl font-black">FAQ</h2>
+        <div className="mt-6 space-y-3">
+          <div className="card">
+            <b>Это полностью автоматический сервис?</b>
+            <p className="mt-2 text-slate-600">Нет. ИИ ускоряет производство, человек контролирует качество и пригодность дизайна.</p>
+          </div>
+          <div className="card">
+            <b>Можно ли заказать доработку?</b>
+            <p className="mt-2 text-slate-600">В MVP оператор оставляет комментарии, а дальнейшие доработки заложены архитектурно.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }

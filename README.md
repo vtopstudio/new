@@ -9,7 +9,7 @@ MVP веб-сервиса для российского рынка: пользо
 - PostgreSQL + Prisma ORM
 - NextAuth/Auth.js credentials auth
 - Zod validation
-- Локальное файловое хранилище `/public/uploads/orders/{orderId}` через storage abstraction
+- Приватное локальное файловое хранилище `.data/uploads/orders/{orderId}` с защищённой выдачей через `/api/files/[id]`
 - YooKassa API в sandbox/test-ready режиме
 
 ## Быстрый старт
@@ -37,7 +37,7 @@ YOOKASSA_RETURN_URL="http://localhost:3000/payment/success"
 YOOKASSA_WEBHOOK_SECRET=""
 ```
 
-Секреты ЮKassa используются только на сервере. `NEXT_PUBLIC_APP_URL` нужен для ссылок возврата и публичного адреса приложения.
+Секреты ЮKassa используются только на сервере. `NEXT_PUBLIC_APP_URL` нужен для ссылок возврата и публичного адреса приложения. Если `YOOKASSA_WEBHOOK_SECRET` задан, webhook принимает только запросы с таким значением в `x-webhook-secret` или `Authorization: Bearer ...`.
 
 ## Prisma
 
@@ -90,7 +90,7 @@ npx prisma db seed
 3. Укажите URL возврата: `http://localhost:3000/payment/success`.
 4. Для локальных webhook используйте туннель, например ngrok, и настройте endpoint:
    - `POST https://<your-tunnel>/api/webhooks/yookassa`
-5. В MVP webhook принимает события `payment.succeeded`, `payment.canceled`, `refund.succeeded` и записывает raw payload в `PaymentEvent`.
+5. В MVP webhook принимает события `payment.succeeded`, `payment.canceled`, `refund.succeeded`, записывает raw payload в `PaymentEvent`, проверяет shared secret при его наличии и перед зачислением оплаты повторно получает платёж из YooKassa.
 
 ## Как тестировать оплату
 
@@ -130,6 +130,7 @@ npx prisma db seed
 - `/payment/fail`
 - `POST /api/payments/yookassa/create`
 - `POST /api/webhooks/yookassa`
+- `GET /api/files/[id]`
 - `POST /api/payments/yookassa/check-status`
 
 ### Админка
@@ -144,12 +145,16 @@ npx prisma db seed
 ## Архитектура MVP
 
 - `src/lib/prompt-engine.ts` формирует русский структурированный промт для оператора/ИИ.
-- `src/lib/storage.ts` изолирует локальное сохранение файлов, чтобы позже заменить его на S3-compatible storage.
+- `src/lib/storage.ts` изолирует приватное локальное сохранение файлов, чтобы позже заменить его на S3-compatible storage.
 - `src/lib/yookassa.ts` содержит серверные вызовы YooKassa с Basic Auth и Idempotence-Key.
 - `prisma/schema.prisma` описывает пользователей, услуги, заказы, файлы, результаты, платежи, события платежей и аддоны.
 
 ## Ограничения MVP
 
 - UI аккуратный и расширяемый, но без финального visual polish.
-- Файлы хранятся локально в `public/uploads`.
+- Файлы хранятся локально в `.data/uploads` и выдаются только владельцу заказа или staff-роли через `/api/files/[id]`.
 - Возвраты заложены через структуру статусов и webhook-событие `refund.succeeded`, но полноценный флоу возврата не реализован.
+
+## CI
+
+GitHub Actions workflow `.github/workflows/ci.yml` запускает `npm install`, `npm run prisma:generate`, `npm run lint` и `npm run build` на pull request.

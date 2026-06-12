@@ -4,3 +4,4 @@ node_modules
 .env*.local
 /public/uploads/orders/*
 !/public/uploads/orders/.gitkeep
+.data
