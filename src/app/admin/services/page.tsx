@@ -1,0 +1,3 @@
+import { prisma } from "@/lib/prisma";import { rub } from "@/lib/format";
+export const dynamic="force-dynamic";
+export default async function AdminServices(){const services=await prisma.service.findMany({orderBy:{createdAt:"asc"}});return <main className="mx-auto max-w-7xl px-4 py-12"><h1 className="text-4xl font-black">Услуги</h1><div className="mt-8 grid gap-4 md:grid-cols-2">{services.map(s=><div className="card" key={s.id}><h2 className="text-xl font-black">{s.title}</h2><p className="mt-2 text-slate-600">{s.shortDescription}</p><p className="mt-3 font-black">{rub(s.basePrice)}</p><span className="badge">{s.isActive?"Активна":"Скрыта"}</span></div>)}</div></main>}

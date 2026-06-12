@@ -1,0 +1,1 @@
+export default function BalancePage(){return <main className="mx-auto max-w-4xl px-4 py-12"><div className="card"><h1 className="text-4xl font-black">Баланс</h1><p className="mt-3 text-slate-600">В MVP баланс отображается минимально. Возвраты и бонусы заложены через статусы платежей.</p></div></main>}

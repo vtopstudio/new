@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  OPERATOR
+}
+
+enum OrderStatus {
+  DRAFT
+  WAITING_PAYMENT
+  PAID
+  IN_PROGRESS
+  NEEDS_CLARIFICATION
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  MANUAL_CONFIRMED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  YOOKASSA
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         Role     @default(USER)
+  balance      Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orders   Order[]
+  payments Payment[]
+}
+
+model Service {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  title            String
+  shortDescription String
+  description      String
+  basePrice        Decimal  @db.Decimal(10, 2)
+  isActive         Boolean  @default(true)
+  fieldsConfig     Json
+  promptTemplate   String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  orders Order[]
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  userId          String
+  serviceId       String
+  status          OrderStatus   @default(WAITING_PAYMENT)
+  briefData       Json
+  generatedPrompt String
+  price           Decimal       @db.Decimal(10, 2)
+  paymentStatus   PaymentStatus @default(PENDING)
+  adminComment    String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service       Service        @relation(fields: [serviceId], references: [id])
+  files         OrderFile[]
+  designResults DesignResult[]
+  payments      Payment[]
+
+  @@index([userId])
+  @@index([serviceId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model OrderFile {
+  id           String   @id @default(cuid())
+  orderId      String
+  fileUrl      String
+  fileType     String
+  originalName String
+  uploadedBy   String
+  createdAt    DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model DesignResult {
+  id          String   @id @default(cuid())
+  orderId     String
+  imageUrl    String
+  title       String
+  description String
+  isPaid      Boolean  @default(true)
+  isSelected  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  userId            String
+  orderId           String
+  amount            Decimal         @db.Decimal(10, 2)
+  currency          String          @default("RUB")
+  status            PaymentStatus   @default(PENDING)
+  provider          PaymentProvider @default(YOOKASSA)
+  providerPaymentId String?         @unique
+  confirmationUrl   String?
+  idempotenceKey    String          @unique
+  rawPayload        Json?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order  Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  events PaymentEvent[]
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model PaymentEvent {
+  id                String   @id @default(cuid())
+  paymentId         String?
+  providerPaymentId String?
+  eventType         String
+  rawPayload        Json
+  createdAt         DateTime @default(now())
+
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([paymentId])
+  @@index([providerPaymentId])
+}
+
+model Addon {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Decimal  @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -1,0 +1,3 @@
+import { prisma } from "@/lib/prisma";
+export const dynamic = "force-dynamic";
+export default async function AdminPage(){const [orders,users,payments]=await Promise.all([prisma.order.count(),prisma.user.count(),prisma.payment.count()]);return <main className="mx-auto max-w-7xl px-4 py-12"><h1 className="text-4xl font-black">Админ-панель</h1><div className="mt-8 grid gap-4 md:grid-cols-3"><div className="card"><b>Заказы</b><p className="text-4xl font-black">{orders}</p></div><div className="card"><b>Пользователи</b><p className="text-4xl font-black">{users}</p></div><div className="card"><b>Платежи</b><p className="text-4xl font-black">{payments}</p></div></div></main>}

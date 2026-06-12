@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function PaymentFail(){return <main className="mx-auto max-w-2xl px-4 py-20"><div className="card text-center"><h1 className="text-4xl font-black">Оплата не завершена</h1><p className="mt-4 text-slate-600">Попробуйте ещё раз из личного кабинета или свяжитесь с поддержкой.</p><Link className="btn btn-primary mt-8" href="/dashboard/orders">Вернуться к заказам</Link></div></main>}
