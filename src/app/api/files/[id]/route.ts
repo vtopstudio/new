@@ -4,6 +4,8 @@ import { authOptions, isStaff } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { readStoredFile } from "@/lib/storage";
 
+export const runtime = "nodejs";
+
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Нужна авторизация" }, { status: 401 });
@@ -16,7 +18,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   }
 
   const data = await readStoredFile(file.fileUrl);
-  return new NextResponse(data, {
+  return new NextResponse(new Uint8Array(data), {
     headers: {
       "Content-Type": file.fileType,
       "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(file.originalName)}`,
