@@ -27,12 +27,13 @@ export default async function NewOrderPage({ params }: { params: Promise<{ servi
 
   const fields = service.fieldsConfig as BriefField[];
   const showcase = showcaseFor(service.slug);
+  const checkoutPrice = service.basePrice;
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <span className="badge">Шаг 1 из 6 — Бизнес/продукт</span>
       <h1 className="mt-4 text-4xl font-black">Заявка: {showcase?.title ?? service.title}</h1>
-      <p className="mt-3 max-w-3xl text-slate-600">Ответьте на простые вопросы. Минимальная стоимость резервируется под текущий заказ, а финальные файлы открываются после оплаты.</p>
+      <p className="mt-3 max-w-3xl text-slate-600">Ответьте на простые вопросы. Стоимость заказа резервируется под текущий заказ, а финальные файлы открываются после оплаты.</p>
       <div className="mt-6 grid gap-3 md:grid-cols-6">{stepHints.map(([title], index) => <div className="rounded-2xl bg-white p-3 text-sm font-bold" key={title}>{index + 1}. {title}</div>)}</div>
       <form action={createOrderAction} className="card mt-8 space-y-8">
         <input type="hidden" name="serviceSlug" value={service.slug} />
@@ -53,7 +54,7 @@ export default async function NewOrderPage({ params }: { params: Promise<{ servi
           ))}
         </div>
         <label className="block"><span className="mb-2 block font-semibold">Материалы и референсы (jpg/png/webp/pdf, до 8 МБ за файл и 32 МБ суммарно)</span><input className="input" name="files" type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" /></label>
-        <div className="rounded-3xl bg-slate-50 p-5"><h2 className="text-xl font-black">Шаг 6 из 6 — Проверка заказа</h2><p className="mt-2 text-slate-600">Минимальная стоимость: <b>{rub(showcase?.priceFrom ?? service.basePrice)}</b>. Зарезервировано под заказ после оплаты: <b>{rub(showcase?.priceFrom ?? service.basePrice)}</b>. Доплаты за варианты, исходники и адаптации будут показаны отдельно.</p><p className="mt-2 text-sm font-semibold text-slate-500">Попробовать без риска: сначала защищённое превью — потом получение файлов.</p></div>
+        <div className="rounded-3xl bg-slate-50 p-5"><h2 className="text-xl font-black">Шаг 6 из 6 — Проверка заказа</h2><p className="mt-2 text-slate-600">Стоимость заказа на этом этапе: <b>{rub(checkoutPrice)}</b>. Зарезервировано под заказ после оплаты: <b>{rub(checkoutPrice)}</b>. Доплаты за дополнительные варианты, исходники и адаптации будут показаны отдельно.</p><p className="mt-2 text-sm font-semibold text-slate-500">Попробовать без риска: сначала защищённое превью — потом получение файлов.</p></div>
         <button className="btn btn-primary">Всё верно — создать заказ</button>
       </form>
     </main>
