@@ -21,7 +21,10 @@ export async function createOrderAction(formData: FormData) {
 
   const fields = service.fieldsConfig as BriefField[];
   const briefData: Record<string, string> = {};
-  for (const field of fields) briefData[field.name] = String(formData.get(field.name) ?? "");
+  for (const field of fields) briefData[field.label] = String(formData.get(field.name) ?? "");
+  briefData["Состав заказа"] = String(formData.get("orderComposition") ?? "Базовый состав");
+  const styleExamples = formData.getAll("styleExamples").map(String).filter(Boolean);
+  briefData["Выбранные примеры стиля"] = styleExamples.length ? styleExamples.join(", ") : "Не выбраны";
 
   const order = await prisma.order.create({
     data: {
