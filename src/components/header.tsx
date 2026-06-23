@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions, isStaff } from "@/lib/auth";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export async function Header() {
   const session = await getServerSession(authOptions);
@@ -13,11 +14,12 @@ export async function Header() {
           <Link href="/#process">Как работает</Link>
           <Link href="/#faq">FAQ</Link>
           {session?.user && <Link href="/dashboard">Кабинет</Link>}
+          {session?.user && <Link href="/dashboard/orders">Мои заказы</Link>}
           {isStaff(session?.user?.role) && <Link href="/admin">Админка</Link>}
         </nav>
         <div className="flex items-center gap-2">
           {session?.user ? (
-            <Link className="btn btn-secondary py-2" href="/api/auth/signout">Выйти</Link>
+            <SignOutButton />
           ) : (
             <>
               <Link className="btn btn-secondary py-2" href="/auth/sign-in">Войти</Link>
