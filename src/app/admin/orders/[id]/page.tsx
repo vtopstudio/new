@@ -17,11 +17,11 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-4xl font-black">Заказ №{order.id}</h1>
+      <span className="badge">Рабочее место оператора</span><h1 className="mt-4 text-4xl font-black">Заказ №{order.id}</h1>
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_380px]">
         <section className="space-y-6">
           <div className="card">
-            <h2 className="text-2xl font-black">Бриф</h2>
+            <h2 className="text-2xl font-black">Заявка клиента</h2>
             <p className="mt-2 text-slate-600">Клиент: {order.user.email}</p>
             <div className="mt-4 grid gap-2">
               {Object.entries(order.briefData as Record<string, string>).map(([key, value]) => (
@@ -34,14 +34,14 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
 
           <div className="card">
             <div className="flex justify-between gap-3">
-              <h2 className="text-2xl font-black">Сгенерированный промт</h2>
+              <h2 className="text-2xl font-black">Prompt Engine 2.0 — 4 промта</h2>
               <CopyButton text={order.generatedPrompt} />
             </div>
             <pre className="mt-4 whitespace-pre-wrap rounded-2xl bg-slate-950 p-4 text-sm text-white">{order.generatedPrompt}</pre>
           </div>
 
           <div className="card">
-            <h2 className="text-2xl font-black">Файлы и результаты</h2>
+            <h2 className="text-2xl font-black">Файлы клиента и результаты</h2>
             {order.files.map((file) => (
               <a className="mt-2 block text-brand" href={protectedFileUrl(file.id)} key={file.id}>
                 {file.originalName}
@@ -71,11 +71,13 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
             <button className="btn btn-primary w-full">Сохранить статус</button>
           </form>
 
+          <div className="card"><h2 className="text-xl font-black">Чек-лист качества</h2><ul className="mt-3 space-y-2 text-sm text-slate-600">{["текст читается", "нет орфографических ошибок", "композиция аккуратная", "соблюдён формат площадки", "соблюдены пожелания клиента", "нет явных AI-артефактов", "результат пригоден для коммерческого использования"].map((item) => <li key={item}>□ {item}</li>)}</ul></div>
+
           <form action={uploadResultAction} className="card space-y-4">
             <input type="hidden" name="orderId" value={order.id} />
             <h2 className="text-xl font-black">Загрузить результат</h2>
             <input className="input" name="title" placeholder="Название варианта" />
-            <textarea className="input" name="description" placeholder="Описание" />
+            <textarea className="input" name="description" placeholder="Описание и комментарий клиенту" /><label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="recommended" /> Рекомендованный вариант (UI-заготовка)</label>
             <input className="input" name="file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required />
             <button className="btn btn-primary w-full">Загрузить</button>
           </form>
