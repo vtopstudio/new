@@ -15,7 +15,7 @@ export async function Header() {
           <Link href="/#faq">FAQ</Link>
           {session?.user && <Link href="/dashboard">Кабинет</Link>}
           {session?.user && <Link href="/dashboard/orders">Мои заказы</Link>}
-          {isStaff(session?.user?.role) && <Link href="/admin">Админка</Link>}
+          {isStaff(session?.user?.role) && <Link href="/admin/orders">Админка</Link>}
         </nav>
         <div className="flex items-center gap-2">
           {session?.user ? (

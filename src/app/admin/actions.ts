@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { authOptions, isStaff } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { protectedFileUrl, saveOrderFile } from "@/lib/storage";
+import { isStorageConfigurationError, protectedFileUrl, saveOrderFile } from "@/lib/storage";
 
 const statusSchema = z.object({
   orderId: z.string(),
@@ -26,22 +26,40 @@ export async function updateOrderStatusAction(formData: FormData) {
   revalidatePath(`/admin/orders/${parsed.orderId}`);
 }
 
-export async function uploadResultAction(formData: FormData) {
-  const session = await requireStaff();
-  const orderId = String(formData.get("orderId"));
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) throw new Error("Файл результата обязателен");
+export type UploadResultState = { error: string | null; success: boolean };
 
-  const stored = await saveOrderFile(orderId, file);
-  const orderFile = await prisma.orderFile.create({ data: { orderId, uploadedBy: session.user!.id, ...stored } });
-  await prisma.designResult.create({
-    data: {
-      orderId,
-      imageUrl: protectedFileUrl(orderFile.id),
-      title: String(formData.get("title") || file.name),
-      description: String(formData.get("description") || "Готовый вариант дизайна"),
-      isPaid: true
+export async function uploadResultAction(_prevState: UploadResultState, formData: FormData): Promise<UploadResultState> {
+  try {
+    const session = await requireStaff();
+    const orderId = String(formData.get("orderId") || "");
+    const file = formData.get("file");
+    if (!orderId) return { error: "Не найден идентификатор заказа.", success: false };
+    if (!(file instanceof File) || file.size === 0) return { error: "Файл результата обязателен.", success: false };
+
+    const order = await prisma.order.findUnique({ where: { id: orderId }, select: { userId: true } });
+    if (!order) return { error: "Заказ не найден.", success: false };
+
+    const stored = await saveOrderFile(orderId, file);
+    const orderFile = await prisma.orderFile.create({ data: { orderId, uploadedBy: session.user!.id, ...stored } });
+    await prisma.designResult.create({
+      data: {
+        orderId,
+        imageUrl: protectedFileUrl(orderFile.id),
+        title: String(formData.get("title") || file.name),
+        description: String(formData.get("description") || "Готовый вариант дизайна"),
+        isPaid: true
+      }
+    });
+    revalidatePath(`/admin/orders/${orderId}`);
+    revalidatePath(`/dashboard/orders/${orderId}`);
+    return { error: null, success: true };
+  } catch (error) {
+    if (isStorageConfigurationError(error)) {
+      return { error: error.message, success: false };
     }
-  });
-  revalidatePath(`/admin/orders/${orderId}`);
+    if (error instanceof Error) {
+      return { error: error.message, success: false };
+    }
+    return { error: "Не удалось загрузить результат. Попробуйте ещё раз.", success: false };
+  }
 }

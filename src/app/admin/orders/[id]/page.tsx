@@ -3,7 +3,8 @@ import { CopyButton } from "@/components/copy-button";
 import { orderStatusLabels, paymentStatusLabels } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { protectedFileUrl } from "@/lib/storage";
-import { updateOrderStatusAction, uploadResultAction } from "../../actions";
+import { updateOrderStatusAction } from "../../actions";
+import { ResultUploadForm } from "./result-upload-form";
 
 const statuses = ["DRAFT", "WAITING_PAYMENT", "PAID", "IN_PROGRESS", "NEEDS_CLARIFICATION", "READY", "COMPLETED", "CANCELLED"] as const;
 
@@ -73,14 +74,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
 
           <div className="card"><h2 className="text-xl font-black">Чек-лист качества</h2><ul className="mt-3 space-y-2 text-sm text-slate-600">{["текст читается", "нет орфографических ошибок", "композиция аккуратная", "соблюдён формат площадки", "соблюдены пожелания клиента", "нет явных AI-артефактов", "результат пригоден для коммерческого использования"].map((item) => <li key={item}>□ {item}</li>)}</ul></div>
 
-          <form action={uploadResultAction} className="card space-y-4">
-            <input type="hidden" name="orderId" value={order.id} />
-            <h2 className="text-xl font-black">Загрузить результат</h2>
-            <input className="input" name="title" placeholder="Название варианта" />
-            <textarea className="input" name="description" placeholder="Описание и комментарий клиенту" /><label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="recommended" /> Рекомендованный вариант (UI-заготовка)</label>
-            <input className="input" name="file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required />
-            <button className="btn btn-primary w-full">Загрузить</button>
-          </form>
+          <ResultUploadForm orderId={order.id} />
 
           <div className="card">
             <h2 className="text-xl font-black">Платежи</h2>

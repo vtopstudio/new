@@ -26,6 +26,17 @@ type S3Config = {
 
 export type StoredFile = { fileUrl: string; fileType: string; originalName: string };
 
+export class StorageConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "StorageConfigurationError";
+  }
+}
+
+export function isStorageConfigurationError(error: unknown): error is StorageConfigurationError {
+  return error instanceof StorageConfigurationError;
+}
+
 function safeFileName(name: string) {
   const normalized = name.replace(/[^a-zA-Z0-9а-яА-ЯёЁ._-]/g, "-");
   return `${Date.now()}-${normalized}`;
@@ -42,20 +53,31 @@ function env(name: string) {
 
 function requiredEnv(name: string) {
   const value = env(name);
-  if (!value) throw new Error(`Не задана обязательная переменная окружения ${name}.`);
+  if (!value) throw new StorageConfigurationError(`Хранилище файлов не настроено: не задана обязательная переменная окружения ${name}.`);
   return value;
 }
 
 function storageDriver(): StorageDriver {
-  const driver = env("STORAGE_DRIVER") ?? "local";
+  const configuredDriver = env("STORAGE_DRIVER");
+  if (!configuredDriver && process.env.NODE_ENV === "production") {
+    throw new StorageConfigurationError(
+      'Хранилище файлов не настроено: задайте STORAGE_DRIVER="s3" и S3_* переменные или явно задайте STORAGE_DRIVER="local" с постоянным STORAGE_LOCAL_ROOT.'
+    );
+  }
+
+  const driver = configuredDriver ?? "local";
   if (driver !== "local" && driver !== "s3") {
-    throw new Error('STORAGE_DRIVER должен быть "local" или "s3".');
+    throw new StorageConfigurationError('Хранилище файлов не настроено: STORAGE_DRIVER должен быть "local" или "s3".');
   }
   return driver;
 }
 
 function localUploadRoot() {
-  return path.resolve(env("STORAGE_LOCAL_ROOT") ?? defaultUploadRoot);
+  const configuredRoot = env("STORAGE_LOCAL_ROOT");
+  if (process.env.NODE_ENV === "production" && storageDriver() === "local" && !configuredRoot) {
+    throw new StorageConfigurationError("Хранилище файлов не настроено: для локального хранилища в production задайте STORAGE_LOCAL_ROOT.");
+  }
+  return path.resolve(configuredRoot ?? defaultUploadRoot);
 }
 
 function normalizeLocalPath(fileUrl: string) {
