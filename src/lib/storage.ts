@@ -6,8 +6,9 @@ const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "applicat
 export const maxFileBytes = 8 * 1024 * 1024;
 export const maxOrderUploadBytes = 32 * 1024 * 1024;
 const defaultUploadRoot = path.join(process.cwd(), ".data", "uploads");
+const databaseFilePrefix = "database:";
 
-type StorageDriver = "local" | "s3";
+type StorageDriver = "local" | "s3" | "database";
 
 type StorageAdapter = {
   saveOrderFile(orderId: string, file: File): Promise<StoredFile>;
@@ -59,15 +60,9 @@ function requiredEnv(name: string) {
 
 function storageDriver(): StorageDriver {
   const configuredDriver = env("STORAGE_DRIVER");
-  if (!configuredDriver && process.env.NODE_ENV === "production") {
-    throw new StorageConfigurationError(
-      'Хранилище файлов не настроено: задайте STORAGE_DRIVER="s3" и S3_* переменные или явно задайте STORAGE_DRIVER="local" с постоянным STORAGE_LOCAL_ROOT.'
-    );
-  }
-
-  const driver = configuredDriver ?? "local";
-  if (driver !== "local" && driver !== "s3") {
-    throw new StorageConfigurationError('Хранилище файлов не настроено: STORAGE_DRIVER должен быть "local" или "s3".');
+  const driver = configuredDriver ?? (process.env.NODE_ENV === "production" ? "database" : "local");
+  if (driver !== "local" && driver !== "s3" && driver !== "database") {
+    throw new StorageConfigurationError('Хранилище файлов не настроено: STORAGE_DRIVER должен быть "local", "s3" или "database".');
   }
   return driver;
 }
@@ -100,6 +95,18 @@ class LocalStorageAdapter implements StorageAdapter {
 
   async readFile(fileUrl: string) {
     return readFile(normalizeLocalPath(fileUrl));
+  }
+}
+
+class DatabaseStorageAdapter implements StorageAdapter {
+  async saveOrderFile(_orderId: string, file: File): Promise<StoredFile> {
+    const body = Buffer.from(await file.arrayBuffer());
+    return { fileUrl: `${databaseFilePrefix}${body.toString("base64")}`, fileType: file.type, originalName: file.name };
+  }
+
+  async readFile(fileUrl: string) {
+    if (!fileUrl.startsWith(databaseFilePrefix)) throw new Error("Некорректная ссылка на файл в базе данных.");
+    return Buffer.from(fileUrl.slice(databaseFilePrefix.length), "base64");
   }
 }
 
@@ -246,7 +253,10 @@ class S3StorageAdapter implements StorageAdapter {
 }
 
 function storageAdapter(): StorageAdapter {
-  return storageDriver() === "s3" ? new S3StorageAdapter() : new LocalStorageAdapter();
+  const driver = storageDriver();
+  if (driver === "s3") return new S3StorageAdapter();
+  if (driver === "database") return new DatabaseStorageAdapter();
+  return new LocalStorageAdapter();
 }
 
 export function protectedFileUrl(fileId: string) {
