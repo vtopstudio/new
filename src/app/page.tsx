@@ -2,62 +2,56 @@ import Link from "next/link";
 import { rub } from "@/lib/format";
 import { serviceSeedData, serviceShowcases } from "@/lib/services";
 
-const processSteps = [
-  ["Бриф", "Вы выбираете услугу и отвечаете на понятные вопросы без дизайнерского жаргона."],
-  ["AI-задание", "Сервис собирает вводные в рабочее задание и промты для оператора."],
-  ["Работа оператора", "Человек запускает AI-инструменты, отбирает варианты и проверяет качество."],
-  ["Готовый дизайн", "Результат загружается в кабинет, где его можно посмотреть и скачать."]
-];
+const processSteps = ["Бриф", "AI-задание", "Работа оператора", "Готовый дизайн", "Результат в кабинете"];
 
-const comparison = [
-  ["Самостоятельно", ["Нужно самому писать промты", "Много случайных результатов", "Сложно получить читаемый текст", "Самому отбирать и дорабатывать"]],
-  ["Через DesignMate", ["Структурированный бриф", "Задание под конкретную услугу", "Операторский отбор", "Контроль качества", "Результат в кабинете"]]
+const howSteps = [
+  ["Вы выбираете услугу", "Карточки, баннеры, оформление ВК или концепции логотипа."],
+  ["Заполняете понятный бриф", "Простые вопросы — без технических терминов."],
+  ["Сервис формирует задание", "Готовый промт и инструкция уходят оператору."],
+  ["Оператор готовит результат", "AI-инструменты + ручной отбор и контроль качества."],
+  ["Вы получаете материалы", "Результат и файлы появляются в вашем кабинете."]
 ];
 
 const formats = [
-  ["Карточка товара", "1200×1600", "from-purple-500/30 to-emerald-300/10"],
-  ["Обложка ВК", "1920×768", "from-emerald-400/25 to-violet-500/10"],
-  ["Рекламный баннер", "1080×1080", "from-fuchsia-400/25 to-purple-500/10"],
-  ["Логотип / знак", "SVG / PNG", "from-violet-400/30 to-emerald-300/10"]
+  ["Карточка товара", "1200×1600", "from-purple-500/30 to-purple-900/20"],
+  ["Обложка ВК", "1920×768", "from-emerald-400/25 to-purple-700/20"],
+  ["Рекламный баннер", "1080×1080", "from-fuchsia-500/30 to-purple-700/20"],
+  ["Логотип / знак", "SVG", "from-violet-500/30 to-emerald-400/20"]
 ];
 
 const faq = [
-  ["Это полностью автоматический сервис?", "Нет. AI ускоряет работу, но финальный отбор и проверку делает оператор."],
-  ["Когда нужна регистрация?", "Сначала можно выбрать услугу и заполнить бриф. Кабинет нужен для сохранения заказа и получения результата."],
-  ["Можно загрузить свои фото и логотип?", "Да. Материалы можно приложить к заказу, чтобы результат был точнее."],
-  ["Что клиент получает в итоге?", "Готовые файлы и результат в личном кабинете после обработки заказа."]
+  ["Это полностью автоматический сервис?", "Нет. AI помогает оператору, но финальный отбор, проверку качества и подгонку делает человек."],
+  ["Кто делает результат?", "Оператор сервиса с помощью AI-инструментов. Вы получаете отобранные и проверенные варианты."],
+  ["Можно ли загрузить свои фото и логотип?", "Да, на шаге «Материалы». Это необязательно — без них заказ тоже будет принят."],
+  ["Что будет после оплаты?", "Заказ переходит в статус «В работе». Вы увидите изменения в личном кабинете."]
 ];
 
 export default function Home() {
   return (
     <main>
-      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
+      <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-24 pt-16 lg:grid-cols-2 lg:pt-24">
         <div>
           <span className="badge">AI + контроль человека</span>
-          <h1 className="mt-6 max-w-4xl text-4xl font-black leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+          <h1 className="mt-5 text-4xl font-bold leading-[1.05] tracking-tight lg:text-6xl">
             Готовый дизайн для бизнеса <span className="text-gradient">без долгой переписки</span> с дизайнером
           </h1>
-          <p className="muted mt-6 max-w-2xl text-lg md:text-xl">
+          <p className="muted mt-5 max-w-xl text-lg">
             Выберите услугу, заполните понятный бриф, оплатите — оператор с помощью AI-инструментов подготовит варианты,
             проверит качество и загрузит результат в ваш кабинет.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/services" className="btn btn-primary">Выбрать услугу →</Link>
-            <a href="#process" className="btn btn-secondary">Как это работает</a>
+            <a href="#how" className="btn btn-secondary">Как это работает</a>
           </div>
-          <p className="muted mt-4 text-sm">MVP: AI помогает оператору, но не заменяет ручной контроль качества.</p>
         </div>
 
         <div className="surface glow-ring p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-purple-200/80">Как мы работаем</p>
-          <ol className="mt-6 space-y-3">
-            {processSteps.map(([title, text], index) => (
-              <li key={title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <div className="flex items-center gap-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-white/[0.07] text-sm font-black text-emerald-200">{index + 1}</span>
-                  <b>{title}</b>
-                </div>
-                <p className="muted mt-2 text-sm">{text}</p>
+          <div className="mb-4 text-xs uppercase tracking-widest text-slate-400">Как мы работаем</div>
+          <ol className="space-y-3">
+            {processSteps.map((step, index) => (
+              <li key={step} className="flex items-center gap-3">
+                <span className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.06] text-sm font-semibold">{index + 1}</span>
+                <span className="text-sm">{step}</span>
               </li>
             ))}
           </ol>
@@ -65,84 +59,92 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12" id="services">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <span className="badge">Услуги</span>
-            <h2 className="mt-4 text-3xl font-black md:text-4xl">Форматы, которые можно заказать</h2>
-            <p className="muted mt-2">Выберите формат — остальное сделаем мы.</p>
-          </div>
-          <Link className="btn btn-secondary hidden md:inline-flex" href="/services">Все услуги</Link>
-        </div>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-3xl font-bold lg:text-4xl">Услуги</h2>
+        <p className="muted mt-2">Выберите формат — остальное сделаем мы.</p>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {serviceSeedData.map((service) => {
             const showcase = serviceShowcases[service.slug];
             return (
-              <article className="surface group flex min-h-80 flex-col overflow-hidden p-0 transition duration-200 hover:-translate-y-1" key={service.slug}>
-                <Link href={`/services/${service.slug}`} className="flex h-full flex-col p-6">
-                  <div className="grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/[0.06] text-xl">✦</div>
-                  <h3 className="mt-5 text-xl font-black">{showcase?.title ?? service.title}</h3>
-                  <p className="muted mt-2 text-sm">{service.shortDescription}</p>
-                  <div className="mt-auto pt-6">
-                    <div className="flex items-center justify-between gap-3 text-sm">
-                      <span className="muted">от <b className="text-slate-50">{rub(showcase?.priceFrom ?? service.basePrice)}</b></span>
-                      <span className="muted">{showcase?.timeFrom ?? "от 1 дня"}</span>
-                    </div>
-                    <span className="mt-5 inline-flex font-bold text-purple-200 group-hover:text-emerald-200">Подробнее →</span>
-                  </div>
-                </Link>
-              </article>
+              <div key={service.slug} className="surface flex flex-col p-6 transition-transform hover:-translate-y-0.5">
+                <div className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-purple-300">✦</div>
+                <h3 className="mt-4 text-lg font-semibold">{showcase?.title ?? service.title}</h3>
+                <p className="muted mt-1 text-sm">{service.shortDescription}</p>
+                <div className="mt-4 flex items-center justify-between text-sm">
+                  <span className="muted">от <span className="font-semibold text-slate-50">{rub(showcase?.priceFrom ?? service.basePrice)}</span></span>
+                  <span className="muted">{showcase?.timeFrom ?? "от 1 дня"}</span>
+                </div>
+                <div className="mt-5 flex gap-2">
+                  <Link href={`/services/${service.slug}`} className="btn btn-secondary flex-1 px-3 py-2 text-sm">Подробнее</Link>
+                  <Link href={`/order/new/${service.slug}`} className="btn btn-primary flex-1 px-3 py-2 text-sm">Заказать</Link>
+                </div>
+              </div>
             );
           })}
         </div>
       </section>
 
-      <section id="process" className="mx-auto max-w-7xl px-4 py-16">
-        <span className="badge">Процесс</span>
-        <h2 className="mt-4 text-3xl font-black md:text-4xl">Почему это не просто генератор картинок</h2>
-        <p className="muted mt-3 max-w-3xl">Человек проверяет читаемость, композицию, соответствие задаче и отбирает лучшие варианты — AI ускоряет, но не решает за клиента.</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {comparison.map(([title, items], blockIndex) => (
-            <div className={`surface ${blockIndex === 1 ? "glow-ring" : ""}`} key={String(title)}>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-purple-200/80">{String(title)}</p>
-              <ul className="mt-5 space-y-3 text-sm">
-                {(items as string[]).map((item) => (
-                  <li className="flex gap-3" key={item}>
-                    <span className={`mt-1.5 h-2 w-2 rounded-full ${blockIndex === 1 ? "bg-emerald-300" : "bg-purple-300/60"}`} />
-                    <span className={blockIndex === 1 ? "text-slate-100" : "muted"}>{item}</span>
-                  </li>
-                ))}
-              </ul>
+      <section id="how" className="mx-auto max-w-7xl px-4 py-20">
+        <h2 className="text-3xl font-bold lg:text-4xl">Как работает сервис</h2>
+        <p className="muted mt-2 max-w-2xl">Человек проверяет читаемость, композицию, соответствие задаче и отбирает лучшие варианты — AI ускоряет, но не решает за вас.</p>
+        <div className="mt-10 grid gap-4 md:grid-cols-5">
+          {howSteps.map(([title, text], index) => (
+            <div key={title} className="surface p-5">
+              <div className="font-mono text-sm text-emerald-300">0{index + 1}</div>
+              <div className="mt-2 font-semibold">{title}</div>
+              <div className="muted mt-1 text-sm">{text}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-16">
+        <h2 className="text-3xl font-bold lg:text-4xl">Почему не просто самому в нейросети</h2>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="surface p-6">
+            <div className="text-sm uppercase tracking-widest text-slate-400">Самостоятельно</div>
+            <ul className="mt-4 space-y-2 text-sm">
+              {["Нужно самому писать промты", "Много случайных результатов", "Сложно получить читаемый текст", "Сложно соблюдать требования площадок", "Самому отбирать и дорабатывать"].map((item) => (
+                <li key={item} className="muted flex gap-2">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400/70" />{item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="surface border-purple-300/40 p-6">
+            <div className="text-sm uppercase tracking-widest text-purple-300">Через сервис</div>
+            <ul className="mt-4 space-y-2 text-sm">
+              {["Структурированный бриф", "Задание под конкретную услугу", "Операторский отбор", "Контроль качества", "Результат в кабинете"].map((item) => (
+                <li key={item} className="flex gap-2"><span className="text-emerald-300">✓</span>{item}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
       <section id="examples" className="mx-auto max-w-7xl px-4 py-16">
-        <span className="badge">Витрина</span>
-        <h2 className="mt-4 text-3xl font-black md:text-4xl">Примеры форматов</h2>
+        <h2 className="text-3xl font-bold lg:text-4xl">Форматы, которые можно заказать</h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {formats.map(([title, size, gradient]) => (
             <div className="surface overflow-hidden p-0" key={title}>
-              <div className={`aspect-[4/5] bg-gradient-to-br ${gradient} grid place-items-center`}>
-                <span className="text-5xl text-white/25">✦</span>
+              <div className={`relative aspect-[4/5] bg-gradient-to-br ${gradient}`}>
+                <div className="absolute inset-0 grid place-items-center text-5xl text-white/20">✦</div>
               </div>
-              <div className="p-5">
-                <div className="font-bold">{title}</div>
-                <div className="muted mt-1 text-xs">{size}</div>
+              <div className="p-4">
+                <div className="font-semibold">{title}</div>
+                <div className="muted text-xs">{size}</div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="faq" className="mx-auto max-w-7xl px-4 py-16">
-        <span className="badge">FAQ</span>
-        <h2 className="mt-4 text-3xl font-black md:text-4xl">Частые вопросы</h2>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {faq.map(([q, a]) => (
-            <div className="surface" key={q}>
-              <h3 className="font-bold">{q}</h3>
-              <p className="muted mt-2 text-sm">{a}</p>
+      <section id="faq" className="mx-auto max-w-7xl px-4 py-20">
+        <h2 className="text-3xl font-bold lg:text-4xl">FAQ</h2>
+        <div className="mt-8 grid max-w-3xl gap-4">
+          {faq.map(([question, answer]) => (
+            <div className="surface" key={question}>
+              <h3 className="font-semibold">{question}</h3>
+              <p className="muted mt-2 text-sm">{answer}</p>
             </div>
           ))}
         </div>
@@ -151,10 +153,10 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 py-16 pb-24">
         <div className="surface glow-ring flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-3xl font-black">Начнём с одной задачи?</h2>
-            <p className="muted mt-2">Выберите услугу, заполните короткий бриф и проверьте рабочий сценарий сервиса.</p>
+            <h2 className="text-3xl font-bold">Готовы попробовать на одной задаче?</h2>
+            <p className="muted mt-2">Выберите услугу и заполните короткий бриф — дальше оператор подготовит результат.</p>
           </div>
-          <Link href="/services" className="btn btn-primary shrink-0">Перейти к услугам</Link>
+          <Link href="/services" className="btn btn-primary shrink-0">Выбрать услугу</Link>
         </div>
       </section>
     </main>
