@@ -6,16 +6,18 @@ import { SignOutButton } from "@/components/sign-out-button";
 export async function Header() {
   const session = await getServerSession(authOptions);
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/85 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-white/10 bg-[#140f24]/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-        <Link href="/" className="text-lg font-black tracking-tight">DesignMate AI</Link>
-        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-          <Link href="/services">Услуги</Link>
-          <Link href="/#process">Как работает</Link>
-          <Link href="/#faq">FAQ</Link>
-          {session?.user && <Link href="/dashboard">Кабинет</Link>}
-          {session?.user && <Link href="/dashboard/orders">Мои заказы</Link>}
-          {isStaff(session?.user?.role) && <Link href="/admin/orders">Админка</Link>}
+        <Link href="/" className="text-lg font-black tracking-tight">
+          <span className="text-gradient">DesignMate</span> AI
+        </Link>
+        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-300 md:flex">
+          <Link className="hover:text-white" href="/services">Услуги</Link>
+          <Link className="hover:text-white" href="/#process">Как работает</Link>
+          <Link className="hover:text-white" href="/#faq">FAQ</Link>
+          {session?.user && <Link className="hover:text-white" href="/dashboard">Кабинет</Link>}
+          {session?.user && <Link className="hover:text-white" href="/dashboard/orders">Мои заказы</Link>}
+          {isStaff(session?.user?.role) && <Link className="hover:text-white" href="/admin/orders">Админка</Link>}
         </nav>
         <div className="flex items-center gap-2">
           {session?.user ? (
