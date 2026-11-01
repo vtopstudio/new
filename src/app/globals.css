@@ -2,12 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
-body { @apply bg-slate-50 text-slate-950 antialiased; }
+:root {
+  color-scheme: dark;
+  --radius: 0.875rem;
+  --background: oklch(0.16 0.04 295);
+  --foreground: oklch(0.97 0.01 300);
+  --card: oklch(0.21 0.045 295);
+  --muted-foreground: oklch(0.74 0.035 300);
+  --border: oklch(0.32 0.04 295 / 60%);
+  --primary: oklch(0.74 0.29 305);
+  --primary-foreground: oklch(0.11 0.035 295);
+  --secondary: oklch(0.27 0.055 300);
+  --accent: oklch(0.32 0.08 305);
+  --neon-violet: oklch(0.78 0.31 305);
+  --neon-green: oklch(0.9 0.28 145);
+  --neon-red: oklch(0.68 0.25 20);
+  --neon-plum: oklch(0.65 0.25 340);
+  --neon-purple: oklch(0.67 0.29 290);
+  --gradient-hero: radial-gradient(1200px 600px at 80% -10%, oklch(0.45 0.22 305 / 35%), transparent 60%),
+                   radial-gradient(900px 500px at 0% 20%, oklch(0.4 0.2 145 / 22%), transparent 60%),
+                   radial-gradient(700px 500px at 50% 100%, oklch(0.4 0.2 340 / 25%), transparent 60%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.78 0.31 305), oklch(0.68 0.28 280));
+  --gradient-card: linear-gradient(180deg, oklch(0.23 0.05 295 / 90%), oklch(0.19 0.04 295 / 90%));
+  --shadow-neon: 0 10px 40px -10px oklch(0.74 0.29 305 / 60%);
+  --shadow-soft: 0 8px 30px -12px oklch(0.1 0.04 295 / 70%);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  min-height: 100vh;
+  background: var(--background);
+  background-image: var(--gradient-hero);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: var(--foreground);
+  @apply antialiased;
+}
+
 a { @apply transition-colors; }
-.input { @apply w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none ring-brand/20 focus:ring-4; }
-.btn { @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold shadow-sm transition hover:-translate-y-0.5; }
-.btn-primary { @apply bg-ink text-white hover:bg-slate-800; }
-.btn-secondary { @apply bg-white text-ink ring-1 ring-slate-200 hover:bg-slate-100; }
-.card { @apply rounded-3xl border border-slate-200 bg-white p-6 shadow-sm; }
-.badge { @apply rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700; }
+
+.input {
+  @apply w-full rounded-2xl border px-4 py-3 outline-none transition focus:ring-4;
+  border-color: var(--border);
+  background: oklch(0.21 0.045 295 / 85%);
+  color: var(--foreground);
+}
+
+.input::placeholder { color: oklch(0.74 0.035 300 / 68%); }
+.input:focus { border-color: var(--neon-violet); --tw-ring-color: oklch(0.78 0.31 305 / 22%); }
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-neon);
+}
+
+.btn-primary:hover { filter: brightness(1.08); }
+
+.btn-secondary {
+  border: 1px solid var(--border);
+  background: oklch(0.21 0.045 295 / 58%);
+  color: var(--foreground);
+}
+
+.btn-secondary:hover { background: oklch(0.27 0.055 300 / 82%); }
+
+.card, .surface {
+  background: var(--gradient-card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 8px);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(8px);
+  @apply p-6;
+}
+
+.badge {
+  @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold;
+  border: 1px solid var(--border);
+  background: oklch(0.21 0.045 295 / 60%);
+  color: var(--muted-foreground);
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, oklch(0.9 0.23 305), oklch(0.9 0.28 145) 60%, oklch(0.82 0.24 340));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-ring {
+  box-shadow: 0 0 0 1px oklch(0.78 0.31 305 / 42%), 0 12px 60px -20px oklch(0.78 0.31 305 / 52%);
+}
+
+.format-card {
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 12px);
+  background: oklch(0.17 0.04 295 / 95%);
+  box-shadow: var(--shadow-soft);
+}
+
+.neon-green { color: var(--neon-green); }
+.neon-violet { color: var(--neon-violet); }
+.neon-red { color: var(--neon-red); }
+.muted { color: var(--muted-foreground); }
